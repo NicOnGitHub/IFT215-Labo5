@@ -1,3 +1,6 @@
+let ID_CLIENT = 1;
+let TOKEN_CLIENT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZENsaWVudCI6MSwicm9sZSI6ImNsaWVudCIsImlhdCI6MTYzNjc1MjI1MywiZXhwIjoxODM2NzUyMjUzfQ.qMcKC0NeuVseNSeGtyaxUvadutNAfzxlhL5LYPsRB8k";
+
 $(function () {
     console.log("ift215")
 });
@@ -26,7 +29,6 @@ function item_to_html(item){
         .append('<li id="quantite">Quantite : ' + item.qte_inventaire +'</li>')
         .append('<li id="categorie">Categorie : ' + item.categorie.nom +'</li>')
         .append('<li id="description">Description : ' + item.description +'</li>');
-        //.append('<i class="fa-solid fa-cart-shopping fa-2xl center"></i>');
     item_body = $('<div></div>')
         .addClass('card-body')
         .append(' <h1 class="card-title text-center"> $' + item.prix +'</h1>');
@@ -40,18 +42,45 @@ function item_to_html(item){
 
 function add_item(id_item){
     $.ajax({
-        url: "/clients/"+1+"/panier",
+        url: "/clients/"+ID_CLIENT+"/panier",
         method:"POST",
         data: {"idProduit": id_item, "quantite": 1},
         beforeSend: function (xhr){
-            xhr.setRequestHeader('Authorization', "Basic "+ "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZENsaWVudCI6MSwicm9sZSI6ImNsaWVudCIsImlhdCI6MTYzNjc1MjI1MywiZXhwIjoxODM2NzUyMjUzfQ.qMcKC0NeuVseNSeGtyaxUvadutNAfzxlhL5LYPsRB8k");
+            xhr.setRequestHeader('Authorization', "Basic "+ TOKEN_CLIENT);
         },
         success: function( result ) {
-            let qty = 0;
-            for (let i = 0; i < result.items.length; i++){
-                qty += result.items[i].quantite;
-            }
-            $('#item_counter').text(qty)
+            $('#item_counter').text(result.items.length)
         }
     });
+}
+
+function chargerpanier(){
+    $.ajax({
+        url: "/clients/"+ID_CLIENT+"/panier",
+        beforeSend: function (xhr){
+            xhr.setRequestHeader('Authorization', "Basic "+ TOKEN_CLIENT);
+        },
+        success: function( result ) {
+            console.log(result);
+            $.each(result.items, function (key, value) {
+                item = panier_to_html(value);
+                $('#list_panier').append(item);
+            });
+            $('#total').append('<p>Total: '+result.valeur.toFixed(2) +'</p>');
+        }
+    });
+}
+
+function panier_to_html(item){
+    item_panier=$(
+        '<div class="row">'+
+            '<div class="col">' +
+                ' <div class="col">' +item.nomProduit +'</div> ' +
+                ' <div class="col">' +item.prix +'</div> ' +
+                ' <div class="col">' +item.quantite +'</div> ' +
+                ' <div class="col">' +item.prix * item.quantite +'</div> ' +
+            '</div>'+
+        '</div>'
+    ).addClass('listePanier')
+    return item_panier
 }
