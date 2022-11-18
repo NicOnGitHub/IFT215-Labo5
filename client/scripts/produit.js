@@ -37,7 +37,7 @@ function item_to_html(item){
         .append('<button type="button" class="btn btn-primary position-relative" onclick="add_item(' + item.id + ')">' +
             ' <i class="bi bi-cart-plus"></i> </button>');
     item_card.append(item_head).append(item_body).append(item_detail).append(item_footer);
-    return $('<div></div>').addClass('col-md-3') .append(item_card);
+    return $('<div></div>').addClass('col-md-3').append(item_card);
 }
 
 function add_item(id_item){
@@ -66,21 +66,17 @@ function chargerpanier(){
                 item = panier_to_html(value);
                 $('#list_panier').append(item);
             });
-            $('#total').append('<p>Total: '+result.valeur.toFixed(2) +'</p>');
+            $('#total').append('<b>Total: '+ result.valeur.toFixed(2) +'</b>');
         }
     });
 }
 
 function panier_to_html(item){
-    item_panier=$(
-        '<div class="row">'+
-            '<div class="col">' +
-                ' <div class="col">' +item.nomProduit +'</div> ' +
-                ' <div class="col">' +item.prix +'</div> ' +
-                ' <div class="col">' +item.quantite +'</div> ' +
-                ' <div class="col">' +item.prix * item.quantite +'</div> ' +
-            '</div>'+
-        '</div>'
-    ).addClass('listePanier')
-    return item_panier
+    item_panier=$('<div></div>')
+        .addClass('row')
+        .append('<div class="col">' + item.nomProduit +'</div>')
+        .append('<div class="col">' + item.prix +'</div>')
+        .append('<div class="col">' + item.quantite +'</div')
+        .append('<div class="col">' + (item.prix * item.quantite).toFixed(2) +'</div>');
+    return item_panier.append('<hr>');
 }
